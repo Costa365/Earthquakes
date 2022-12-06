@@ -1,0 +1,25 @@
+version: '3'
+services:
+  redis:
+    image: 'redis:4-alpine'
+    ports:
+      - '6379:6379'
+  email:
+    build: ./email
+    environment:
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=$EMAIL_PASSWORD
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - EMAIL_TEST_RECIPIENT=${EMAIL_TEST_RECIPIENT}
+    volumes:
+      - ./email:/email
+    depends_on:
+      - redis
+  monitor:
+    build: ./monitor
+    volumes:
+      - ./monitor:/monitor
+    depends_on:
+      - redis
+      - email
