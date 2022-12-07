@@ -4,6 +4,7 @@ import redis
 import os
 from datetime import datetime
 import smtplib
+import re
 from email.mime.text import MIMEText
 
 REDIS_HOST = "redis"
@@ -15,7 +16,7 @@ SMTP_PORT = os.environ.get('SMTP_PORT')
 SMTP_USERNAME = os.environ.get('EMAIL_USER')
 SMTP_PASSWORD = os.environ.get('EMAIL_PASSWORD') 
 
-MIN_MAG_TO_REPORT = 4.7
+MIN_MAG_TO_REPORT = 4.8
 
 def email():
     try:
@@ -29,7 +30,8 @@ def email():
                 try:
                     title = msg["place"]
                     ts = msg["time"]
-                    mag = float(msg["mag"].split(" ")[1])
+                    result = re.search(r".* ([\d.]+)", str(msg["mag"]))
+                    mag = float(str(result.group(1)))
                     print(f"{ts}: {title} {mag}")
                     if(mag > MIN_MAG_TO_REPORT):
                         sendEmail(ts, title)
