@@ -4,7 +4,6 @@ import redis
 import os
 from datetime import datetime
 import smtplib
-import re
 from email.mime.text import MIMEText
 
 REDIS_HOST = "redis"
@@ -28,32 +27,51 @@ def email():
             if message is not None and isinstance(message, dict):
                 msg = eval(str(message['data']))
                 try:
-                    title = msg["place"]
-                    ts = msg["time"]
-                    result = re.search(r".* ([\d.]+)", str(msg["mag"]))
-                    mag = float(str(result.group(1)))
-                    print(f"{ts}: {title} {mag}")
+                    mag = float(str(msg["mag"]))
                     if(mag > MIN_MAG_TO_REPORT):
-                        sendEmail(ts, title)
+                        mime = prepareEmail(msg)
+                        if mime != None:
+                            sendEmail(mime)     
                 except Exception as e:
                     print(e)
     except Exception as e:
         print(e)
 
-def sendEmail(time, title):
+def prepareContent(msg):
+    content = ""
     try:
-        content=f"{time}: {title}"
-        msg = MIMEText(content)
-        msg['Subject'] = f"Earthquake Alert - {time}"
-        msg['From'] = SMTP_USERNAME
-        msg['To'] = EMAIL_TO
+        content = f"Earthquake Alert\n\n"
+        content += f"Time: {msg['time']}\n"
+        content += f"Place: {msg['place']}\n"
+        content += f"Magnitude: {msg['mag']}\n"
+        content += f"Depth: {msg['depth']}km\n"
+        content += f"More information: {msg['link']}\n"
+    except Exception as e:
+        print(e)
+    finally:
+        return content
+
+def prepareEmail(msg):
+    try:
+        content=prepareContent(msg)
+        place = msg["place"]
+        mime = MIMEText(content)
+        mime['Subject'] = f"Earthquake Alert - {place}"
+        mime['From'] = SMTP_USERNAME
+        mime['To'] = EMAIL_TO
+        return mime
+    except Exception as e:
+        print(e)
+        return None
+
+def sendEmail(mime):
+    try:
         mail = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
         mail.starttls()
         mail.login(SMTP_USERNAME, SMTP_PASSWORD)
-        mail.sendmail(SMTP_USERNAME, EMAIL_TO, msg.as_string())
+        mail.sendmail(SMTP_USERNAME, EMAIL_TO, mime.as_string())
         mail.quit()
-        print ("Email sent successfully")
-
+        print (f"{mime['Subject']} - Email sent successfully")
     except Exception as e:
         print(e)
         
