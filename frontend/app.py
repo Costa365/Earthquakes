@@ -1,8 +1,13 @@
 from flask import Flask, render_template
 import redis
 from threading import Thread
+from flask_sse import sse
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
+app.config["REDIS_URL"] = "redis://redis"
+app.register_blueprint(sse, url_prefix='/events')
 
 REDIS_HOST = "redis"
 REDIS_PORT = 6379
@@ -22,6 +27,8 @@ def events():
                 try:
                     print(msg.get('place', 'Not Set'))
                     earthquakes.insert(0,msg)
+                    with app.app_context():
+                        sse.publish({"message": msg}, type='publish')
                 except Exception as e:
                     print(e)
     except Exception as e:

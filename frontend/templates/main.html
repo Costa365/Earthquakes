@@ -31,7 +31,7 @@
             <th class="right-align" scope="col">More Info</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="earthquakes">
           {% for eq in earthquakes %}
             <tr>
               <td>{{eq["time"]}}</td>  
@@ -42,7 +42,22 @@
           {% endfor %}
         </tbody>
       </table>
-      
     </div>
+    <script>
+      var source = new EventSource("{{ url_for('sse.stream') }}");
+      source.addEventListener('publish', function(event) {
+          var data = JSON.parse(event.data);
+          document.getElementById("earthquakes").innerHTML = 
+          `<tr>
+              <td>${data.message.time}</td>  
+              <td>${data.message.place}</td>  
+              <td>${data.message.mag}</td>  
+              <td class="right-align"><a href="${data.message.link}" target="_blank">More Info</a></td>  
+            </tr>`
+          + document.getElementById("earthquakes").innerHTML
+          //`<p>${data.message.time} - ${data.message.place} - ${data.message.place} - <a href="${data.message.link}" target="_blank">More Info</a></p>`;
+          //alert("Event received " + data.message.time + " - " + data.message.place);
+          },true);
+  </script>
   </body>
 </html>
