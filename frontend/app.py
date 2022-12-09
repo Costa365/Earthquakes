@@ -21,7 +21,7 @@ def events():
                 msg = eval(str(message['data']))
                 try:
                     print(msg.get('place', 'Not Set'))
-                    earthquakes.append(msg)
+                    earthquakes.insert(0,msg)
                 except Exception as e:
                     print(e)
     except Exception as e:

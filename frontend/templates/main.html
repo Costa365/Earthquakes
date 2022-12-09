@@ -1,19 +1,48 @@
 <!DOCTYPE HTML>
-<html>
+<html data-theme="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="https://picocss.com/favicon.ico">
+    <meta name="description" content="Recent Earthquakes around the world">
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+    <link rel="stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styles.css') }}">
+    <meta name="robots" content="index, nofollow">
     <title>Earthquakes</title>
-    
   </head>
   <body>
-    <h1>Earthquakes</h1>
-    <div id="earthquakes">
-
-    {% for eq in earthquakes %}
-    <p>{{ eq }}</p>
-    {% endfor %}
+    <div class="container">
+      <div class="container">
+        <img class="banner" src="/static/eq-banner.jpg" alt="banner">
+        <div class="bottom-right">Earthquakes</div>
+      </div>
+      
+      <label for="EQs">Earthquakes</label>
+      <table id = "EQs">
+        <col width="30%" />
+        <col width="40%" />
+        <col width="10%" />
+        <col width="20%" />
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Place</th>
+            <th scope="col">Magnitude</th>
+            <th class="right-align" scope="col">More Info</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for eq in earthquakes %}
+            <tr>
+              <td>{{eq["time"]}}</td>  
+              <td>{{eq["place"]}}</td>  
+              <td>{{eq["mag"]}}</td>  
+              <td class="right-align"><a href="{{eq['link']}}" target="_blank">More Info</a></td>  
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      
     </div>
-    
   </body>
 </html>
