@@ -16,6 +16,14 @@ services:
       - ./email:/email
     depends_on:
       - redis
+  frontend:
+    build: ./frontend
+    ports:
+      - '5005:5005'
+    volumes:
+      - ./frontend:/frontend
+    depends_on:
+      - redis
   monitor:
     build: ./monitor
     volumes:
