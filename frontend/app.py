@@ -26,7 +26,7 @@ def events():
                 msg = eval(str(message['data']))
                 try:
                     print(msg.get('place', 'Not Set'))
-                    earthquakes.insert(0,msg)
+                    earthquakes.insert(0, msg)
                     with app.app_context():
                         sse.publish({"message": msg}, type='publish')
                 except Exception as e:

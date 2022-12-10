@@ -24,6 +24,8 @@ def monitor():
             d = feedparser.parse(RSS_URL)
             for entry in reversed(d.entries):
                 eq = {}
+                result = re.search(r"id=(.*)", entry.guid)
+                eq["guid"] = str(result.group(1))
                 result = re.search(r"[Mm][A-Z,a-z]? ....(.*)", entry.title.title())
                 eq["place"] = str(result.group(1)).strip()
                 eq["time"] = entry.emsc_time

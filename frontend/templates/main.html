@@ -45,18 +45,21 @@
     </div>
     <script>
       var source = new EventSource("{{ url_for('sse.stream') }}");
+      var lastGuid = "0" // Prevent earthquake from being shown multiple times
       source.addEventListener('publish', function(event) {
-          var data = JSON.parse(event.data);
-          document.getElementById("earthquakes").innerHTML = 
-          `<tr>
-              <td>${data.message.time}</td>  
-              <td>${data.message.place}</td>  
-              <td>${data.message.mag}</td>  
-              <td class="right-align"><a href="${data.message.link}" target="_blank">More Info</a></td>  
-            </tr>`
-          + document.getElementById("earthquakes").innerHTML
-          //`<p>${data.message.time} - ${data.message.place} - ${data.message.place} - <a href="${data.message.link}" target="_blank">More Info</a></p>`;
-          //alert("Event received " + data.message.time + " - " + data.message.place);
+          var data = JSON.parse(event.data)
+          if(data.message.guid != lastGuid){
+            lastGuid = data.message.guid
+            console.log("Earthquake reported - " + lastGuid)
+            document.getElementById("earthquakes").innerHTML = 
+            `<tr>
+                <td>${data.message.time}</td>  
+                <td>${data.message.place}</td>  
+                <td>${data.message.mag}</td>  
+                <td class="right-align"><a href="${data.message.link}" target="_blank">More Info</a></td>  
+              </tr>`
+            + document.getElementById("earthquakes").innerHTML
+            }
           },true);
   </script>
   </body>
