@@ -14,6 +14,7 @@ REDIS_PORT = 6379
 REDIS_PASSWORD = ""
 
 earthquakes = []
+MAX_EARTHQUAKES = 200
 
 def events():
     try:
@@ -27,6 +28,8 @@ def events():
                 try:
                     print(msg.get('place', 'Not Set'))
                     earthquakes.insert(0, msg)
+                    if len(earthquakes) > MAX_EARTHQUAKES:
+                        del earthquakes[len(earthquakes) - MAX_EARTHQUAKES:]
                     with app.app_context():
                         sse.publish({"message": msg}, type='publish')
                 except Exception as e:
