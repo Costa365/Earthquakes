@@ -15,25 +15,33 @@ REDIS_PASSWORD = ""
 
 earthquakes = []
 MAX_EARTHQUAKES = 200
+SOCKET_KEEP_ALIVE_TIMEOUT = 30
 
 def events():
     try:
-        red = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
+        red = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True,socket_timeout=SOCKET_KEEP_ALIVE_TIMEOUT)
         sub = red.pubsub()
         sub.subscribe('earthquakes')
         print("Listening for events...")
-        for message in sub.listen():
-            if message is not None and isinstance(message, dict):
-                msg = eval(str(message['data']))
-                try:
-                    print(msg.get('place', 'Not Set'))
-                    earthquakes.insert(0, msg)
-                    if len(earthquakes) > MAX_EARTHQUAKES:
-                        del earthquakes[len(earthquakes) - MAX_EARTHQUAKES:]
-                    with app.app_context():
-                        sse.publish({"message": msg}, type='publish')
-                except Exception as e:
-                    print(e)
+        while(1):
+            try:
+                for message in sub.listen():
+                    if message is not None and isinstance(message, dict) and message['type']=='message':
+                        msg = eval(str(message['data']))
+                        try:
+                            print(msg.get('place', 'Not Set'))
+                            earthquakes.insert(0, msg)
+                            if len(earthquakes) > MAX_EARTHQUAKES:
+                                del earthquakes[len(earthquakes) - MAX_EARTHQUAKES:]
+                            with app.app_context():
+                                sse.publish({"message": msg}, type='publish')
+                        except Exception as e:
+                            print(e)
+            except redis.exceptions.TimeoutError as t:
+                with app.app_context():
+                    sse.publish({"message": ""}, type='publish')
+            except Exception as e:
+                print(e)
     except Exception as e:
         print(e)
 

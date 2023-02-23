@@ -48,7 +48,7 @@
       var lastGuid = "0" // Prevent earthquake from being shown multiple times
       source.addEventListener('publish', function(event) {
           var data = JSON.parse(event.data)
-          if(data.message.guid != lastGuid){
+          if(data.message != "" && data.message.guid != lastGuid){
             lastGuid = data.message.guid
             console.log("Earthquake reported - " + lastGuid)
             document.getElementById("earthquakes").innerHTML = 
