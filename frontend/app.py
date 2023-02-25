@@ -39,7 +39,7 @@ def events():
                             print(e)
             except redis.exceptions.TimeoutError as t:
                 with app.app_context():
-                    sse.publish({"message": ""}, type='publish')
+                    sse.publish({"message": "keep-alive"}, type='publish')
             except Exception as e:
                 print(e)
     except Exception as e:
