@@ -24,7 +24,7 @@ def email():
         sub.subscribe('earthquakes')
 
         for message in sub.listen():
-            if message is not None and isinstance(message, dict):
+            if message is not None and isinstance(message, dict) and message['type']=='message':
                 msg = eval(str(message['data']))
                 try:
                     mag = float(str(msg["mag"]))

@@ -16,7 +16,7 @@ POLL_INTERVAL = 120
 RSS_URL = "https://www.emsc-csem.org/service/rss/rss.php?typ=emsc"
 
 def monitor():
-    latest = datetime.strptime('1970-01-01 00:00:00 UTC','%Y-%m-%d %H:%M:%S %Z')
+    guids={}
     try:
         r = redis.StrictRedis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, decode_responses=True)
 
@@ -26,20 +26,20 @@ def monitor():
                 eq = {}
                 result = re.search(r"id=(.*)", entry.guid)
                 eq["guid"] = str(result.group(1))
-                result = re.search(r"[Mm][A-Z,a-z]? ....(.*)", entry.title.title())
-                eq["place"] = str(result.group(1)).strip()
-                eq["time"] = entry.emsc_time
-                eq["lat"] = entry.geo_lat
-                eq["long"] = entry.geo_long
-                eq["depth"] = entry.emsc_depth
-                result = re.search(r".* ([\d.]+)", entry.emsc_magnitude)
-                eq["mag"] = str(result.group(1))
-                eq["link"] = entry.link
-                etime = datetime.strptime(entry.emsc_time,'%Y-%m-%d %H:%M:%S %Z')
-                if etime > latest:
+                guid = int(eq["guid"])
+                if guid not in guids:
+                    result = re.search(r"[Mm][A-Z,a-z]? ....(.*)", entry.title.title())
+                    eq["place"] = str(result.group(1)).strip()
+                    eq["time"] = entry.emsc_time
+                    eq["lat"] = entry.geo_lat
+                    eq["long"] = entry.geo_long
+                    eq["depth"] = entry.emsc_depth
+                    result = re.search(r".* ([\d.]+)", entry.emsc_magnitude)
+                    eq["mag"] = str(result.group(1))
+                    eq["link"] = entry.link
                     print(f"{eq['time']} - {eq['place']} - {eq['mag']}")
-                    latest = etime
-                    r.publish('earthquakes', json.dumps(eq)) 
+                    guids[guid]=True
+                    r.publish('earthquakes', json.dumps(eq))
             time.sleep(POLL_INTERVAL)
     except Exception as e:
         print(e)
