@@ -14,7 +14,7 @@ REDIS_PORT = 6379
 REDIS_PASSWORD = ""
 
 earthquakes = []
-MAX_EARTHQUAKES = 100
+MAX_EARTHQUAKES = 50
 SOCKET_KEEP_ALIVE_TIMEOUT = 30
 
 def events():
@@ -32,7 +32,7 @@ def events():
                             print(msg.get('place', 'Not Set'))
                             earthquakes.insert(0, msg)
                             if len(earthquakes) > MAX_EARTHQUAKES:
-                                del earthquakes[len(earthquakes) - MAX_EARTHQUAKES:]
+                                del earthquakes[MAX_EARTHQUAKES:]
                             with app.app_context():
                                 sse.publish({"message": msg}, type='publish')
                         except Exception as e:
