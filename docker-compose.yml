@@ -4,6 +4,7 @@ services:
     image: 'redis:4-alpine'
     ports:
       - '6379:6379'
+    restart: always
     networks:
       - app-net
   email:
@@ -16,6 +17,7 @@ services:
       - EMAIL_TEST_RECIPIENT=${EMAIL_TEST_RECIPIENT}
     volumes:
       - ./email:/email
+    restart: always
     networks:
       - app-net
       - default
@@ -24,14 +26,15 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - '5005:5005'
+      - '5006:5006'
     volumes:
       - ./frontend:/frontend
     environment:
       VIRTUAL_HOST: earthquakes.costa365.site
-      PORT: 5005
+      PORT: 5006
     depends_on:
       - redis
+    restart: always
     networks:
       - app-net
       - default
@@ -42,6 +45,7 @@ services:
     depends_on:
       - redis
       - email
+    restart: always
     networks:
       - app-net
       - default
