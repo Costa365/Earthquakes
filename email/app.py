@@ -15,7 +15,7 @@ SMTP_PORT = os.environ.get('SMTP_PORT')
 SMTP_USERNAME = os.environ.get('EMAIL_USER')
 SMTP_PASSWORD = os.environ.get('EMAIL_PASSWORD') 
 
-MIN_MAG_TO_REPORT = 4.8
+MIN_MAG_TO_REPORT = 5.8
 
 def email():
     try:
@@ -55,8 +55,9 @@ def prepareEmail(msg):
     try:
         content=prepareContent(msg)
         place = msg["place"]
+	mag = msg["mag"]
         mime = MIMEText(content)
-        mime['Subject'] = f"Earthquake Alert - {place}"
+        mime['Subject'] = f"Earthquake Alert - {place} - {mag}"
         mime['From'] = SMTP_USERNAME
         mime['To'] = EMAIL_TO
         return mime
