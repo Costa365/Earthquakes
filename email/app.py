@@ -55,7 +55,7 @@ def prepareEmail(msg):
     try:
         content=prepareContent(msg)
         place = msg["place"]
-	mag = msg["mag"]
+        mag = msg["mag"]
         mime = MIMEText(content)
         mime['Subject'] = f"Earthquake Alert - {place} - {mag}"
         mime['From'] = SMTP_USERNAME
