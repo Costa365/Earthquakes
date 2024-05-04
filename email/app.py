@@ -2,7 +2,6 @@
 
 import redis
 import os
-from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 
@@ -15,7 +14,7 @@ SMTP_PORT = os.environ.get('SMTP_PORT')
 SMTP_USERNAME = os.environ.get('EMAIL_USER')
 SMTP_PASSWORD = os.environ.get('EMAIL_PASSWORD') 
 
-MIN_MAG_TO_REPORT = 5.8
+MIN_MAG_TO_REPORT = 6.5
 
 def email():
     try:
@@ -28,9 +27,9 @@ def email():
                 msg = eval(str(message['data']))
                 try:
                     mag = float(str(msg["mag"]))
-                    if(mag > MIN_MAG_TO_REPORT):
+                    if mag > MIN_MAG_TO_REPORT:
                         mime = prepareEmail(msg)
-                        if mime != None:
+                        if mime is not None:
                             sendEmail(mime)     
                 except Exception as e:
                     print(e)
@@ -40,7 +39,7 @@ def email():
 def prepareContent(msg):
     content = ""
     try:
-        content = f"Earthquake Alert\n\n"
+        content = "Earthquake Alert\n\n"
         content += f"Time: {msg['time']}\n"
         content += f"Place: {msg['place']}\n"
         content += f"Magnitude: {msg['mag']}\n"
@@ -53,7 +52,7 @@ def prepareContent(msg):
 
 def prepareEmail(msg):
     try:
-        content=prepareContent(msg)
+        content = prepareContent(msg)
         place = msg["place"]
         mag = msg["mag"]
         mime = MIMEText(content)
@@ -72,7 +71,7 @@ def sendEmail(mime):
         mail.login(SMTP_USERNAME, SMTP_PASSWORD)
         mail.sendmail(SMTP_USERNAME, EMAIL_TO, mime.as_string())
         mail.quit()
-        print (f"{mime['Subject']} - Email sent successfully")
+        print(f"{mime['Subject']} - Email sent successfully")
     except Exception as e:
         print(e)
         
