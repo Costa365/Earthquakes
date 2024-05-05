@@ -30,7 +30,7 @@ def monitor():
             else:
                 timeParams = "&starttime="+startTime+"&endtime="+endTime
 
-            url += "&updatedafter="+timeParams
+            url += timeParams
             response = requests.get(url)
             print(url)
 
