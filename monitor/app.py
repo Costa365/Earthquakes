@@ -12,7 +12,7 @@ REDIS_PASSWORD = ""
 
 POLL_INTERVAL = 240
 
-API_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=4"
+API_URL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&minmagnitude=3"
 
 def monitor():
     guids = {}
@@ -21,10 +21,16 @@ def monitor():
 
         while True:
             url = API_URL
-            if len(guids) > 0:
-                fiveMinsAgo = datetime.utcnow() - timedelta(minutes=5)
-                fiveMinsAgoFmt = fiveMinsAgo.strftime('%Y%m%dT%H%M%S')
-                url += "&updatedafter="+fiveMinsAgoFmt
+            fiveMinsAgo = datetime.utcnow() - timedelta(minutes=5)
+            startTime = fiveMinsAgo.strftime('%Y%m%dT%H%M%S')
+            endTime = datetime.utcnow().strftime('%Y%m%dT%H%M%S')
+
+            if len(guids) == 0:
+                timeParams = "&starttime="+datetime.utcnow().strftime('%Y%m%dT000000')+"&endtime="+endTime
+            else:
+                timeParams = "&starttime="+startTime+"&endtime="+endTime
+
+            url += "&updatedafter="+timeParams
             response = requests.get(url)
             print(url)
 
