@@ -7,6 +7,6 @@ COPY ./requirements.txt .
 
 RUN pip install -r requirements.txt
 
-EXPOSE 5006
+EXPOSE 5007
 
 CMD ["python","-u","app.py"]

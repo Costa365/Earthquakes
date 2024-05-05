@@ -21,7 +21,7 @@ def monitor():
 
         while True:
             url = API_URL
-            if len(guids) > 0:    
+            if len(guids) > 0:
                 fiveMinsAgo = datetime.utcnow() - timedelta(minutes=5)
                 fiveMinsAgoFmt = fiveMinsAgo.strftime('%Y%m%dT%H%M%S')
                 url += "&updatedafter="+fiveMinsAgoFmt
@@ -34,7 +34,8 @@ def monitor():
                     guid = feature['id']
                     if guid not in guids:
                         eq = {}
-                        eq["place"] = feature['properties']['place'].capitalize()
+                        place = feature['properties']['place']
+                        eq["place"] = place[0].upper() + place[1:]
                         ts = int(feature['properties']['time'])/1000
                         eq["time"] = datetime.utcfromtimestamp(ts).strftime('%d/%m/%Y %H:%M:%S')
                         eq["lat"] = feature['geometry']['coordinates'][1]
