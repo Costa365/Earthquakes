@@ -45,7 +45,8 @@ def monitor():
                         eq["lat"] = feature['geometry']['coordinates'][1]
                         eq["long"] = feature['geometry']['coordinates'][0]
                         eq["depth"] = feature['geometry']['coordinates'][2]
-                        eq["mag"] = feature['properties']['mag']
+                        mag = feature['properties']['mag']
+                        eq["mag"] = str(round(mag,1))
                         eq["link"] = feature['properties']['url']
                         print(f"{eq['time']} - {eq['place']} - {eq['mag']}")
                         guids[guid] = True
